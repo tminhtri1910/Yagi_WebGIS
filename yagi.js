@@ -41,7 +41,7 @@ function bufferGeoJsonObj(paObjJson, vectorBufferLayer) {
 }
 
 function displayBuffer(result, vectorBufferLayer) {
-    console.log("Array of geometry:",result);
+    console.log("Yagi geometry array:",result);
 
     var objJson = createArrayJsonObj(result);
     console.log("Buffer GeoJSON Object:", objJson);
@@ -52,7 +52,7 @@ function displayBuffer(result, vectorBufferLayer) {
 function fetchGeoBuffer(vectorBufferLayer, dateFromFocus) {
     $.ajax({
         type: "POST",
-        url: "VN_pgsqlAPI.php", // Adjust the path if necessary
+        url: "pgsqlAPI.php", // Adjust the path if necessary
         data: {
             functionname: 'getGeoBuferToAjax',
             date: dateFromFocus

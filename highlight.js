@@ -44,7 +44,7 @@ function displayObjInfo(result) {
 function fetchHighLight(myPoint, vectorHighLightLayer){
     $.ajax({
         type: "POST",
-        url: "VN_pgsqlAPI.php",
+        url: "pgsqlAPI.php",
         data: {
             functionname: 'getGeoVNToAjax',
             paPoint: myPoint
@@ -65,7 +65,7 @@ function fetchHighLight(myPoint, vectorHighLightLayer){
 
     $.ajax({
         type: "POST",
-        url: "VN_pgsqlAPI.php",
+        url: "pgsqlAPI.php",
         data: {
             functionname: 'getInfoVNToAjax',
             paPoint: myPoint

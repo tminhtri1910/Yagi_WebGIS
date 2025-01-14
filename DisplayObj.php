@@ -12,7 +12,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="openlayers.js" type="text/javascript"></script>
     <script src="jquery3.7.1.js" type="text/javascript"></script>
+
     <script src="yagi.js" type="text/javascript"></script>
+    <script src="province.js" type="text/javascript"></script>
     <script src="highlight.js" type="text/javascript"></script>
 </head>
 
@@ -103,7 +105,7 @@
                 <div id="map" class="px-3" style="width: 85vw; height: 80vh;"></div>
             </td>
             <td>
-                <button type="button" class="btn btn-primary">Ảnh hưởng của bão</button>
+                <button id="myButton" type="button" class="btn btn-primary">Ảnh hưởng của bão</button>
             </td>
         </tr>
     </table>
@@ -196,7 +198,7 @@
                         color: 'rgba(19, 128, 237, 0.5)'
                     }),
                     stroke: new ol.style.Stroke({
-                        color: 'white',
+                        color: 'navy',
                         width: 2
                     })
                 }),
@@ -219,8 +221,17 @@
                         src: "hurricane-2-svgrepo-com.svg"
                     })
                 })
-
             };
+
+            var styleHighLight = new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(186, 0, 0, 0.8)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'darkred',
+                        width: 2
+                    })
+                });
 
             var styleFunction = function(feature) {
                 return styles[feature.getGeometry().getType()];
@@ -234,7 +245,7 @@
                 style: styleFunction
             });
             var vectorHighLightLayer = new ol.layer.Vector({
-                style: styleFunction
+                style: styleHighLight
             });
             map.addLayer(vectorBufferLayer);
             map.addLayer(vectorProvinceLayer);
@@ -261,12 +272,12 @@
                         currentlyFocusedElement.classList.remove('blurred');
                     currentlyFocusedElement = this; // Update the currently focused element
 
-                    // Check if the source exists and clear it if it does
-                    const source = vectorHighLightLayer.getSource();
-                    if (source) {
-                        source.clear(); // Clear existing features if the source is set
-                    }
-                    $("#info").html(''); // Clear existing content of the #info element
+                    // // Check if the source exists and clear it if it does
+                    // const source = vectorHighLightLayer.getSource();
+                    // if (source) {
+                    //     source.clear(); // Clear existing features if the source is set
+                    // }
+                    // $("#info").html(''); // Clear existing content of the #info element
 
                     console.log('focused');
 
@@ -276,28 +287,38 @@
                     fetchGeoBuffer(vectorBufferLayer, dateFromFocus);
 
                     // Add click listener only if it hasn't been added before
-                    if (!singleClickListenerAdded) {
-                        map.on('singleclick', function(evt) {
-                            var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
-                            var lon = lonlat[0];
-                            var lat = lonlat[1];
-                            var myPoint = 'POINT(' + lon + ' ' + lat + ')';
+                    // if (!singleClickListenerAdded) {
 
-                            fetchHighLight(myPoint, vectorHighLightLayer);
-                            loop = loop + 1;
-                            // console.log(loop);
-                        });
-                        singleClickListenerAdded = true; // Set the flag to true after adding the listener
-                    }
+                    //     singleClickListenerAdded = true; // Set the flag to true after adding the listener
+                    // }
                 });
 
+                map.on('singleclick', function(evt) {
+                    var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+                    var lon = lonlat[0];
+                    var lat = lonlat[1];
+                    var myPoint = 'POINT(' + lon + ' ' + lat + ')';
+
+                    fetchHighLight(myPoint, vectorHighLightLayer);
+                    loop = loop + 1;
+                    // console.log(loop);
+                });
+                
                 // Attach blur event handler to elements with class 'timeline-content'
                 $('.timeline-content').on('blur', function() {
                     // Add the 'blurred' class when focus is lost
                     this.classList.add('blurred');
                     console.log('blurred');
                 });
+
+                //Click event handler for button
+                $('#myButton').on('click', function() {
+                    // alert('Button');
+                    fetchGeoProvince(vectorProvinceLayer);
+                });
             });
+
+
         };
     </script>
 
@@ -319,7 +340,7 @@
 
             // Create a new URL object
             var url = new URL(currentUrl);
-            
+
             // Remove any existing fragment
             url.hash = ''; // This removes the fragment identifier
 

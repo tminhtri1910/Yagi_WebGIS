@@ -3,11 +3,12 @@
     {
         $paPDO = initDB();
         $paSRID = '4326';
+
         if (isset($_POST['paPoint'])) $paPoint = $_POST['paPoint'];
         $functionname = $_POST['functionname'];
         if (isset($_POST['date'])) $date = $_POST['date'];
 
-        $aResult = "null";
+        $aResult = "default null";
         if($functionname == 'getGeoVNToAjax')
             $aResult = getGeoVNToAjax($paPDO, $paSRID, $paPoint);
         else if ($functionname=='getInfoVNToAjax')
@@ -16,6 +17,10 @@
         if ($functionname == 'getGeoBuferToAjax') {
             // Assuming $paPDO is already defined and connected to your database
             $aResult = getGeoBuferToAjax($paPDO, $date);
+        }
+        if ($functionname == 'getGeoProvinceToAjax') {
+            // Assuming $paPDO is already defined and connected to your database
+            $aResult = getGeoProvinceToAjax($paPDO);
         }
 
         // var_dump( $aResult); 
@@ -118,7 +123,7 @@
     {
         //echo $paPoint;
         //echo "<br>";
-        $mySQLStr ="SELECT ST_AsGeoJson(geom) as geo, ST_AsGeoJson(ST_Buffer(geom::geography,3000*intensity)) as buffer 
+        $mySQLStr ="SELECT ST_AsGeoJson(geom) as point, ST_AsGeoJson(ST_Buffer(geom::geography,3000*intensity)) as buffer 
                      FROM yagistorm
                      WHERE dtg <= '".$date."'";
         $result = query($paPDO, $mySQLStr);
@@ -127,8 +132,28 @@
             $geoArray = []; // Initialize an array to hold all geo results
             // Lặp kết quả
             foreach ($result as $item) {
-                $geoArray[] = json_decode($item['geo']); // Decode each JSON string to GeoJSON object then add to the array
+                $geoArray[] = json_decode($item['point']); // Decode each JSON string to GeoJSON object then add to the array
                 $geoArray[] = json_decode($item['buffer']); // Decode each JSON string to GeoJSON object then add to the array
+            }
+            return json_encode($geoArray);  // Return the array as a JSON string
+        } else
+            return "null";
+    }   
+
+    function getGeoProvinceToAjax($paPDO)
+    {
+        $mySQLStr = "SELECT ST_AsGeoJson(geom) as province from vndamage 
+                        JOIN gadm41_vnm_1 ON vndamage.province = gadm41_vnm_1.name_1 
+                    UNION ALL
+                    SELECT ST_AsGeoJson(geom) as province from pldamage
+                        JOIN gadm41_phl_1 ON pldamage.province = gadm41_phl_1.name_1";
+        $result = query($paPDO, $mySQLStr);
+        // return $result;
+        if ($result != null) {
+            $geoArray = []; // Initialize an array to hold all geo results
+            // Lặp kết quả
+            foreach ($result as $item) {
+                $geoArray[] = json_decode($item['province']); // Decode each JSON string to GeoJSON object then add to the array
             }
             return json_encode($geoArray);  // Return the array as a JSON string
         } else

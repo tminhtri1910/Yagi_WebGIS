@@ -28,40 +28,39 @@ function createArrayJsonObj(result) {
 }
 
 // Hàm vẽ GeoJSON lên bản đồ
-function provinceGeoJsonObj(paObjJson, vectorBufferLayer) {
+function provinceGeoJsonObj(paObjJson, vectorProvinceLayer) {
     var vectorSource = new ol.source.Vector({
         features: (new ol.format.GeoJSON()).readFeatures(paObjJson, {
             dataProjection: 'EPSG:4326',
             featureProjection: 'EPSG:3857'
         })
     });
-    // console.log("Setting source for vectorBufferLayer with features:", vectorSource.getFeatures()); // Log the features being set
+    // console.log("Setting source for vectorProvinceLayer with features:", vectorSource.getFeatures()); // Log the features being set
 
-    vectorBufferLayer.setSource(vectorSource);
+    vectorProvinceLayer.setSource(vectorSource);
 }
 
-function displayProvince(result, vectorBufferLayer) {
-    console.log("Array of geometry:", result);
+function displayProvince(result, vectorProvinceLayer) {
+    console.log("Provinces geometry array:", result);
 
     var objJson = createArrayJsonObj(result);
     console.log("Provinces GeoJSON Object:", objJson);
 
-    bufferGeoJsonObj(objJson, vectorBufferLayer);
+    provinceGeoJsonObj(objJson, vectorProvinceLayer);
 }
 
-function fetchGeoBuffer(vectorBufferLayer, dateFromFocus) {
+function fetchGeoProvince(vectorProvinceLayer) {
     $.ajax({
         type: "POST",
-        url: "VN_pgsqlAPI.php", // Adjust the path if necessary
+        url: "pgsqlAPI.php", // Adjust the path if necessary
         data: {
-            functionname: 'getGeoBuferToAjax',
-            date: dateFromFocus
+            functionname: 'getGeoProvinceToAjax',
         },
         success: function (result) {
-            displayBuffer(result, vectorBufferLayer); // Call the function with the result
+            displayProvince(result, vectorProvinceLayer); // Call the function with the result
         },
         error: function (xhr, status, error) {
-            console.error("Error fetching geo buffer: " + error);
+            alert("Error fetching geo province: " + error);
         }
     });
 }
