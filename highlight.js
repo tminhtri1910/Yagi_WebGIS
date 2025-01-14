@@ -46,7 +46,7 @@ function fetchHighLight(myPoint, vectorHighLightLayer){
         type: "POST",
         url: "pgsqlAPI.php",
         data: {
-            functionname: 'getGeoVNToAjax',
+            functionname: 'getGeoHighLightToAjax',
             paPoint: myPoint
         },
         success: function (result, status, error) {
@@ -67,7 +67,7 @@ function fetchHighLight(myPoint, vectorHighLightLayer){
         type: "POST",
         url: "pgsqlAPI.php",
         data: {
-            functionname: 'getInfoVNToAjax',
+            functionname: 'getInfoToAjax',
             paPoint: myPoint
         },
         success: function (result, status, error) {

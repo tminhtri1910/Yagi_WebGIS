@@ -8,21 +8,23 @@
         $functionname = $_POST['functionname'];
         if (isset($_POST['date'])) $date = $_POST['date'];
 
-        $aResult = "default null";
-        if($functionname == 'getGeoVNToAjax')
-            $aResult = getGeoVNToAjax($paPDO, $paSRID, $paPoint);
-        else if ($functionname=='getInfoVNToAjax')
-            $aResult = getInfoVNToAjax($paPDO, $paSRID, $paPoint);
-
-        if ($functionname == 'getGeoBuferToAjax') {
-            // Assuming $paPDO is already defined and connected to your database
-            $aResult = getGeoBuferToAjax($paPDO, $date);
-        }
-        if ($functionname == 'getGeoProvinceToAjax') {
-            // Assuming $paPDO is already defined and connected to your database
-            $aResult = getGeoProvinceToAjax($paPDO);
-        }
-
+        switch($functionname){
+            case 'getGeoHighLightToAjax':
+                $aResult = getGeoHighLightToAjax($paPDO, $paSRID, $paPoint);
+                break;
+            case 'getInfoToAjax':
+                $aResult = getInfoToAjax($paPDO, $paSRID, $paPoint);
+                break;
+            case 'getGeoBuferToAjax':
+                $aResult = getGeoBuferToAjax($paPDO, $date);
+                break;
+            case 'getGeoProvinceToAjax':
+                $aResult = getGeoProvinceToAjax($paPDO);
+                break;
+            default:
+                $aResult = "default null";
+        } 
+        
         // var_dump( $aResult); 
         echo $aResult;//trả về string
         
@@ -73,7 +75,7 @@
         $paPDO = null;
     }
 
-    function getGeoVNToAjax ($paPDO, $paSRID, $paPoint)
+    function getGeoHighLightToAjax ($paPDO, $paSRID, $paPoint)
     {
         //echo $paPoint;
         //echo "<br>";
@@ -92,7 +94,7 @@
             return "null";
     }
 
-    function getInfoVNToAjax($paPDO, $paSRID,$paPoint)
+    function getInfoToAjax($paPDO, $paSRID,$paPoint)
     {
         $paPoint = str_replace(',', ' ', $paPoint);
 

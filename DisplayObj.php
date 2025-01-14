@@ -105,7 +105,7 @@
                 <div id="map" class="px-3" style="width: 85vw; height: 80vh;"></div>
             </td>
             <td>
-                <button id="myButton" type="button" class="btn btn-primary">Ảnh hưởng của bão</button>
+                <button id="myButton" type="button" class="btn btn-primary fw-bold">Ảnh hưởng của bão</button>
             </td>
         </tr>
     </table>
@@ -208,7 +208,7 @@
                         color: 'rgba(60, 179, 113, 0.5)'
                     }),
                     stroke: new ol.style.Stroke({
-                        color: 'black',
+                        color: 'darkgreen',
                         width: 1
                     })
                 }),
@@ -229,7 +229,7 @@
                     }),
                     stroke: new ol.style.Stroke({
                         color: 'darkred',
-                        width: 2
+                        width: 3
                     })
                 });
 

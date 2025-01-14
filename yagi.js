@@ -41,7 +41,7 @@ function bufferGeoJsonObj(paObjJson, vectorBufferLayer) {
 }
 
 function displayBuffer(result, vectorBufferLayer) {
-    console.log("Yagi geometry array:",result);
+    console.log("Buffer geometry array:",result);
 
     var objJson = createArrayJsonObj(result);
     console.log("Buffer GeoJSON Object:", objJson);
