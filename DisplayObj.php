@@ -101,11 +101,11 @@
     <table>
         <tr>
             <td>
-                <div id="info"></div>
-                <div id="map" class="px-3" style="width: 85vw; height: 80vh;"></div>
+                <div id="map" class="px-3" style="width: 75vw; height: 80vh;"></div>
             </td>
-            <td>
+            <td style="display: flex; flex-direction: column; align-items:flex-start; gap: 30px;">
                 <button id="myButton" type="button" class="btn btn-primary fw-bold">Ảnh hưởng của bão</button>
+                <div id="info" style="font-size: 20px; font-weight: bold;"></div>
             </td>
         </tr>
     </table>
@@ -224,14 +224,14 @@
             };
 
             var styleHighLight = new ol.style.Style({
-                    fill: new ol.style.Fill({
-                        color: 'rgba(186, 0, 0, 0.8)'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: 'darkred',
-                        width: 3
-                    })
-                });
+                fill: new ol.style.Fill({
+                    color: 'rgba(186, 0, 0, 0.8)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: 'darkred',
+                    width: 3
+                })
+            });
 
             var styleFunction = function(feature) {
                 return styles[feature.getGeometry().getType()];
@@ -303,7 +303,7 @@
                     loop = loop + 1;
                     // console.log(loop);
                 });
-                
+
                 // Attach blur event handler to elements with class 'timeline-content'
                 $('.timeline-content').on('blur', function() {
                     // Add the 'blurred' class when focus is lost
@@ -320,6 +320,97 @@
 
 
         };
+
+        function updateHighlight(attribute) {
+            // Lấy các giá trị min và max từ cơ sở dữ liệu (thông qua API)
+            $.ajax({
+                type: "POST",
+                url: 'test_api.php',
+                data: {
+                    functionname: 'getMinMaxValues'
+                }, // Hàm PHP để lấy min, max
+                success: function(result) {
+                    try {
+                        var minMaxValues = JSON.parse(result); // Giải mã kết quả từ server
+
+                        // Lấy min và max cho thuộc tính đã chọn
+                        var minValue, maxValue;
+                        switch (attribute) {
+                            case 'number_of_deaths':
+                                minValue = minMaxValues.min_deaths;
+                                maxValue = minMaxValues.max_deaths;
+                                break;
+                            case 'number_of_injured':
+                                minValue = minMaxValues.min_injured;
+                                maxValue = minMaxValues.max_injured;
+                                break;
+                            case 'number_of_damaged_houses':
+                                minValue = minMaxValues.min_damaged_houses;
+                                maxValue = minMaxValues.max_damaged_houses;
+                                break;
+                            case 'number_of_flooded_houses':
+                                minValue = minMaxValues.min_flooded_houses;
+                                maxValue = minMaxValues.max_flooded_houses;
+                                break;
+                            default:
+                                return;
+                        }
+
+                        // Lấy dữ liệu GeoJSON và cập nhật highlight theo thuộc tính đã chọn
+                        $.ajax({
+                            type: "POST",
+                            url: 'test_api.php',
+                            data: {
+                                functionname: 'getGeoJsonByAttribute',
+                                attribute: attribute
+                            },
+                            success: function(result) {
+
+                                var geoJson = JSON.parse(result);
+
+                                if (geoJson.error) {
+                                    alert("Lỗi: " + geoJson.error);
+                                } else {
+                                    // Duyệt qua từng feature trong GeoJSON và tính màu sắc
+                                    geoJson.features.forEach(function(feature) {
+                                        var value = feature.properties[attribute];
+                                        var color = getColorByValue(value, minValue, maxValue);
+                                        // console.log(color)
+                                        // Cập nhật màu sắc cho feature
+                                        feature.style = new ol.style.Style({
+                                            fill: new ol.style.Fill({
+                                                color: color
+                                            }),
+                                            stroke: new ol.style.Stroke({
+                                                color: 'black', // Viền đen cho các đối tượng
+                                                width: 2
+                                            })
+                                        });
+                                    });
+
+                                    // Cập nhật dữ liệu cho layer vector
+                                    var vectorSource = new ol.source.Vector({
+                                        features: (new ol.format.GeoJSON()).readFeatures(geoJson, {
+                                            dataProjection: 'EPSG:4326',
+                                            featureProjection: 'EPSG:3857'
+                                        })
+                                    });
+                                    vectorLayer.setSource(vectorSource);
+                                }
+                            },
+                            error: function() {
+                                alert("Không thể tải dữ liệu GeoJSON.");
+                            }
+                        });
+                    } catch (e) {
+                        alert("Lỗi khi xử lý dữ liệu: " + e.message);
+                    }
+                },
+                error: function() {
+                    alert("Không thể lấy giá trị min/max từ server.");
+                }
+            });
+        }
     </script>
 
     <script>

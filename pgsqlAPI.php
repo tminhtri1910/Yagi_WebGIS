@@ -24,7 +24,7 @@
             default:
                 $aResult = "default null";
         } 
-        
+
         // var_dump( $aResult); 
         echo $aResult;//trả về string
         
@@ -82,8 +82,12 @@
         $paPoint = str_replace(',', ' ', $paPoint);
 
         $mySQLStr = "SELECT ST_AsGeoJson(geom) as geo 
-                     FROM gadm41_vnm_1 
-                     WHERE ST_Within(ST_GeomFromText('" . $paPoint . "', " . $paSRID . "), geom)";
+                        FROM gadm41_vnm_1 JOIN vndamage ON vndamage.province = gadm41_vnm_1.name_1 
+                        WHERE ST_Within(ST_GeomFromText('" . $paPoint . "', " . $paSRID . "), geom)
+                    UNION ALL
+                    SELECT ST_AsGeoJson(geom) as geo 
+                        FROM gadm41_phl_1 JOIN pldamage ON pldamage.province = gadm41_phl_1.name_1
+                        WHERE ST_Within(ST_GeomFromText('" . $paPoint . "', " . $paSRID . "), geom)";
         $result = query ($paPDO, $mySQLStr);
         
         if ($result != null)
@@ -98,9 +102,13 @@
     {
         $paPoint = str_replace(',', ' ', $paPoint);
 
-        $mySQLStr = "SELECT gid_1, name_1, ST_Area(geom::geography)/1000000 as shape_area
-                     FROM gadm41_vnm_1 
-                     WHERE ST_Within(ST_GeomFromText('" . $paPoint . "', " . $paSRID . "), geom)";
+        $mySQLStr = "SELECT name_1, number_of_deaths, number_of_injured, number_of_damaged_houses, number_of_flooded_houses, ST_Area(geom::geography)/1000000 as shape_area
+                        FROM gadm41_vnm_1 JOIN vndamage ON vndamage.province = gadm41_vnm_1.name_1 
+                        WHERE ST_Within(ST_GeomFromText('" . $paPoint . "', " . $paSRID . "), geom)
+                    UNION ALL 
+                    SELECT name_1, number_of_deaths, number_of_injured, number_of_damaged_houses, number_of_flooded_houses, ST_Area(geom::geography)/1000000 as shape_area
+                        FROM gadm41_phl_1 JOIN pldamage ON pldamage.province = gadm41_phl_1.name_1
+                        WHERE ST_Within(ST_GeomFromText('" . $paPoint . "', " . $paSRID . "), geom)";
         $result = query ($paPDO, $mySQLStr);
 
         if ($result != null)
@@ -108,8 +116,12 @@
             $resFin = '<table>';
             // Lặp kết quả
             foreach ($result as $item) {
-                $resFin = $resFin.'<tr><td>GID_1: '.$item['gid_1'].'</td></tr>';
+                // $resFin = $resFin.'<tr><td>GID_1: '.$item['gid_1'].'</td></tr>';
                 $resFin = $resFin.'<tr><td>Tỉnh: '.$item['name_1'].'</td></tr>';
+                $resFin = $resFin.'<tr><td>Số người chết: '.$item['number_of_deaths'].'</td></tr>';
+                $resFin = $resFin.'<tr><td>Số người bị thương: '.$item['number_of_injured'].'</td></tr>';
+                $resFin = $resFin.'<tr><td>Số nhà bị phá hủy: '.$item['number_of_damaged_houses'].'</td></tr>';
+                $resFin = $resFin. '<tr><td>Số nhà bị ngập: '.$item['number_of_flooded_houses'].'</td></tr>';
                 // $resFin = $resFin.'<tr><td>Chu vi: '.$item['shape_leng'] . '&deg' . '</td></tr>';
                 $resFin = $resFin.'<tr><td>Diện tích: '.$item['shape_area'] . ' km&sup2;' . '</td></tr>';
                 break;
@@ -161,5 +173,4 @@
         } else
             return "null";
     }   
-
 ?>
