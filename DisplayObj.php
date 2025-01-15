@@ -116,7 +116,15 @@
                         <option value="number_of_damaged_houses">Số nhà bị hư hỏng</option>
                         <option value="number_of_flooded_houses">Số nhà bị ngập</option>
                     </select>
+
+                    <div style="height: 20px; /* Chiều cao thanh */
+                                background: linear-gradient(to right, rgba(255, 255, 0, 0.8), rgba(255, 0, 0, 0.8));
+                                border: 1px solid #ccc;">
+                    </div>
+                    <div style="float: left;">Thấp</div>
+                    <div style="float: right;">Cao</div>
                 </div>
+            
 
                 <div id="info" style="font-size: 20px; font-weight:600;"></div>
             </td>
