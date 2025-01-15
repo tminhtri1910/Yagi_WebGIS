@@ -51,7 +51,7 @@ function fetchHighLight(myPoint, vectorHighLightLayer){
         },
         success: function (result, status, error) {
             if (result == "null") {
-                alert("Không tìm thấy vùng quanh điểm đã chọn");
+                alert("Vùng đã chọn không hợp lệ");
                 return;
             }
             highLightObj(result, vectorHighLightLayer);

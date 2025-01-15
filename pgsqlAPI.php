@@ -118,10 +118,10 @@
             foreach ($result as $item) {
                 // $resFin = $resFin.'<tr><td>GID_1: '.$item['gid_1'].'</td></tr>';
                 $resFin = $resFin.'<tr><td>Tỉnh: '.$item['name_1'].'</td></tr>';
-                $resFin = $resFin.'<tr><td>Số người chết: '.$item['number_of_deaths'].'</td></tr>';
-                $resFin = $resFin.'<tr><td>Số người bị thương: '.$item['number_of_injured'].'</td></tr>';
-                $resFin = $resFin.'<tr><td>Số nhà bị phá hủy: '.$item['number_of_damaged_houses'].'</td></tr>';
-                $resFin = $resFin. '<tr><td>Số nhà bị ngập: '.$item['number_of_flooded_houses'].'</td></tr>';
+                $resFin = $resFin.'<tr><td>Số người chết: '.($item['number_of_deaths'] ?? 'Không có dữ liệu').'</td></tr>';
+                $resFin = $resFin.'<tr><td>Số người bị thương: '.($item['number_of_injured'] ?? 'Không có dữ liệu').'</td></tr>';
+                $resFin = $resFin.'<tr><td>Số nhà bị phá hủy: '.($item['number_of_damaged_houses'] ?? 'Không có dữ liệu').'</td></tr>';
+                $resFin = $resFin. '<tr><td>Số nhà bị ngập: '.($item['number_of_flooded_houses'] ?? 'Không có dữ liệu').'</td></tr>';
                 // $resFin = $resFin.'<tr><td>Chu vi: '.$item['shape_leng'] . '&deg' . '</td></tr>';
                 $resFin = $resFin.'<tr><td>Diện tích: '.$item['shape_area'] . ' km&sup2;' . '</td></tr>';
                 break;
@@ -137,7 +137,8 @@
     {
         //echo $paPoint;
         //echo "<br>";
-        $mySQLStr ="SELECT ST_AsGeoJson(geom) as point, ST_AsGeoJson(ST_Buffer(geom::geography,3000*intensity)) as buffer 
+        $mySQLStr = "SELECT ST_AsGeoJson(geom) as point, ST_AsGeoJson(ST_Buffer(geom::geography,3000*intensity)) as buffer,
+                        ST_AsGeoJson(ST_Makeline(ARRAY(SELECT geom FROM yagistorm WHERE dtg <= '" . $date . "' ORDER BY gid ))) AS line
                      FROM yagistorm
                      WHERE dtg <= '".$date."'";
         $result = query($paPDO, $mySQLStr);
@@ -148,6 +149,7 @@
             foreach ($result as $item) {
                 $geoArray[] = json_decode($item['point']); // Decode each JSON string to GeoJSON object then add to the array
                 $geoArray[] = json_decode($item['buffer']); // Decode each JSON string to GeoJSON object then add to the array
+                $geoArray[] = json_decode($item['line']); // Decode each JSON string to GeoJSON object then add to the array
             }
             return json_encode($geoArray);  // Return the array as a JSON string
         } else
