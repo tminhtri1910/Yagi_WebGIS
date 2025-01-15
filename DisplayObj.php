@@ -124,7 +124,7 @@
                     <div style="float: left;">Thấp</div>
                     <div style="float: right;">Cao</div>
                 </div>
-            
+
 
                 <div id="info" style="font-size: 20px; font-weight:600;"></div>
             </td>
@@ -344,10 +344,27 @@
                     console.log('blurred');
                 });
 
-                //Click event handler for button
+                // //Click event handler for button
+                // $('#myButton').on('click', function() {
+                //     // alert('Button');
+                //     fetchGeoProvince(vectorProvinceLayer);
+                // });
+
+                let clickCount = 0; // Initialize a counter
+
+                // Attach click event handler to the button
                 $('#myButton').on('click', function() {
-                    // alert('Button');
-                    fetchGeoProvince(vectorProvinceLayer);
+                    clickCount++; // Increment the counter on each click
+
+                    // Perform actions for the first click
+                    if (clickCount === 1) {
+                        fetchGeoProvince(vectorProvinceLayer);
+
+                        // Perform actions for the second click
+                    } else if (clickCount === 2) {
+                        vectorProvinceLayer.getSource().clear();
+                        clickCount = 0; // Reset the counter if you want to start over
+                    }
                 });
 
                 // Load mặc định
