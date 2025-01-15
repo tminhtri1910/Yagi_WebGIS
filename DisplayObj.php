@@ -110,6 +110,7 @@
                 <div>
                     <label for="highlight-attribute" style="font-weight:bold;">Mức độ thiệt hại của các tỉnh theo:</label>
                     <select id="highlight-attribute">
+                        <option value="" disabled selected>Vui lòng chọn giá trị</option>
                         <option value="number_of_deaths">Số người chết</option>
                         <option value="number_of_injured">Số người bị thương</option>
                         <option value="number_of_damaged_houses">Số nhà bị hư hỏng</option>
