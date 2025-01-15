@@ -15,6 +15,7 @@
 
     <script src="yagi.js" type="text/javascript"></script>
     <script src="province.js" type="text/javascript"></script>
+    <script src="provincesbyattribute.js" type="text/javascript"></script>
     <script src="highlight.js" type="text/javascript"></script>
 </head>
 
@@ -103,9 +104,20 @@
             <td>
                 <div id="map" class="px-3" style="width: 75vw; height: 80vh;"></div>
             </td>
-            <td style="display: flex; flex-direction: column; align-items:flex-start; gap: 30px;">
+            <td style="display: flex; flex-direction: column; align-items:flex-start; gap: 50px;">
                 <button id="myButton" type="button" class="btn btn-primary fw-bold">Ảnh hưởng của bão</button>
-                <div id="info" style="font-size: 20px; font-weight: bold;"></div>
+
+                <div>
+                    <label for="highlight-attribute" style="font-weight:bold;">Mức độ thiệt hại của các tỉnh theo:</label>
+                    <select id="highlight-attribute">
+                        <option value="number_of_deaths">Số người chết</option>
+                        <option value="number_of_injured">Số người bị thương</option>
+                        <option value="number_of_damaged_houses">Số nhà bị hư hỏng</option>
+                        <option value="number_of_flooded_houses">Số nhà bị ngập</option>
+                    </select>
+                </div>
+
+                <div id="info" style="font-size: 20px; font-weight:600;"></div>
             </td>
         </tr>
     </table>
@@ -195,7 +207,7 @@
             var styles = {
                 'MultiPolygon': new ol.style.Style({
                     fill: new ol.style.Fill({
-                        color: 'rgba(19, 128, 237, 0.5)'
+                        color: 'rgba(19, 128, 237, 0.3)'
                     }),
                     stroke: new ol.style.Stroke({
                         color: 'navy',
@@ -232,7 +244,7 @@
 
             var styleHighLight = new ol.style.Style({
                 fill: new ol.style.Fill({
-                    color: 'orange'
+                    color: 'white'
                 }),
                 stroke: new ol.style.Stroke({
                     color: 'darkorange',
@@ -256,7 +268,12 @@
             });
             map.addLayer(vectorBufferLayer);
             map.addLayer(vectorProvinceLayer);
+
+            // Set a high zIndex for the vectorHighLightLayer
+            vectorHighLightLayer.setZIndex(30); // You can choose any number higher than other layers
+            // Add the layer to the map
             map.addLayer(vectorHighLightLayer);
+
             <?php #endregion
             ?>
 
@@ -268,8 +285,8 @@
                                 ?>";
 
             var currentlyFocusedElement = null; // Variable to store the currently focused element
-            var loop = 0;
-            var singleClickListenerAdded = false; // Flag to track if the listener has been added
+            // var loop = 0;
+            // var singleClickListenerAdded = false; // Flag to track if the listener has been added
 
             $(document).ready(function() { //ensures that the Document Object Model(DOM) is fully loaded before attaching event handlers.
                 // Attach focus event handler to elements with class 'timeline-content'
@@ -307,7 +324,7 @@
                     var myPoint = 'POINT(' + lon + ' ' + lat + ')';
 
                     fetchHighLight(myPoint, vectorHighLightLayer);
-                    loop = loop + 1;
+                    // loop = loop + 1;
                     // console.log(loop);
                 });
 
@@ -323,6 +340,15 @@
                     // alert('Button');
                     fetchGeoProvince(vectorProvinceLayer);
                 });
+
+                // Load mặc định
+                // updateHighlight($("#highlight-attribute").val(), map);
+                // Sự kiện khi thay đổi thuộc tính trong combo box
+                $("#highlight-attribute").change(function() {
+                    var selectedAttribute = $(this).val();
+                    updateHighLightByAttribute(selectedAttribute, map);
+                });
+
             });
         };
     </script>

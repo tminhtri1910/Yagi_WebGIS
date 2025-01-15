@@ -4,22 +4,31 @@
         $paPDO = initDB();
         $paSRID = '4326';
 
-        if (isset($_POST['paPoint'])) $paPoint = $_POST['paPoint'];
+        if (isset($_POST['paPoint'])) ;
         $functionname = $_POST['functionname'];
-        if (isset($_POST['date'])) $date = $_POST['date'];
 
         switch($functionname){
             case 'getGeoHighLightToAjax':
+                $paPoint = $_POST['paPoint'];
                 $aResult = getGeoHighLightToAjax($paPDO, $paSRID, $paPoint);
                 break;
             case 'getInfoToAjax':
+                $paPoint = $_POST['paPoint'];
                 $aResult = getInfoToAjax($paPDO, $paSRID, $paPoint);
                 break;
             case 'getGeoBuferToAjax':
+                $date = $_POST['date'];
                 $aResult = getGeoBuferToAjax($paPDO, $date);
                 break;
             case 'getGeoProvinceToAjax':
                 $aResult = getGeoProvinceToAjax($paPDO);
+                break;
+            case 'getGeoJsonByAttribute':
+                $attribute = $_POST['attribute'];
+                $aResult = getGeoJsonByAttribute($paPDO, $attribute);
+                break;
+            case 'getMinMaxValues':
+                $aResult = getMinMaxValues($paPDO); // Gọi hàm getMinMaxValues
                 break;
             default:
                 $aResult = "default null";
@@ -113,7 +122,8 @@
 
         if ($result != null)
         {
-            $resFin = '<table>';
+            $resFin = '<h4 style="color:darkred; font-weight:bold;">Thiệt hại của từng tỉnh</h4>';
+            $resFin = $resFin.'<table>';
             // Lặp kết quả
             foreach ($result as $item) {
                 // $resFin = $resFin.'<tr><td>GID_1: '.$item['gid_1'].'</td></tr>';
@@ -174,5 +184,64 @@
             return json_encode($geoArray);  // Return the array as a JSON string
         } else
             return "null";
-    }   
+    } 
+    
+    function getGeoJsonByAttribute($paPDO, $attribute)
+    {
+        // Câu lệnh SQL JOIN giữa VNDamage và GADM41_VNM_1 để lấy dữ liệu không gian và thuộc tính
+        $mySQLStr = "SELECT ST_AsGeoJson(g.geom) as geo, d.province, d.\"$attribute\" 
+                        FROM \"gadm41_vnm_1\" g
+                        JOIN \"vndamage\" d ON g.name_1 = d.province
+                        WHERE d.\"$attribute\" IS NOT NULL
+                    UNION ALL
+                    SELECT ST_AsGeoJson(g.geom) as geo, d.province, d.\"$attribute\" 
+                        FROM \"gadm41_phl_1\" g
+                        JOIN \"pldamage\" d ON g.name_1 = d.province
+                        WHERE d.\"$attribute\" IS NOT NULL";  // Kiểm tra nếu thuộc tính không null
+
+        $result = query($paPDO, $mySQLStr);
+
+        $features = [];
+        if ($result != null) {
+            foreach ($result as $item) {
+                $geoJson = json_decode($item['geo']);
+                if ($geoJson) {
+                    // Thêm thuộc tính vào đối tượng GeoJSON
+                    $geoJson->properties = [
+                        'province' => $item['province'],
+                        $attribute => $item[$attribute]  // Thêm giá trị thuộc tính vào phần properties
+                    ];
+                    $features[] = $geoJson;
+                }
+            }
+        }
+        return json_encode([
+            "type" => "FeatureCollection",
+            "features" => $features
+        ]);
+    }
+
+    function getMinMaxValues($paPDO)
+    {
+        // Truy vấn để lấy min, max của từng thuộc tính
+        $sql = "SELECT 
+                    MIN(number_of_deaths) AS min_deaths, MAX(number_of_deaths) AS max_deaths,
+                    MIN(number_of_injured) AS min_injured, MAX(number_of_injured) AS max_injured,
+                    MIN(number_of_damaged_houses) AS min_damaged_houses, MAX(number_of_damaged_houses) AS max_damaged_houses,
+                    MIN(number_of_flooded_houses) AS min_flooded_houses, MAX(number_of_flooded_houses) AS max_flooded_houses
+                FROM (
+                    SELECT number_of_deaths, number_of_injured, number_of_damaged_houses, number_of_flooded_houses
+                        FROM vndamage
+                    UNION ALL
+                    SELECT number_of_deaths, number_of_injured, number_of_damaged_houses, number_of_flooded_houses
+                        FROM pldamage
+                    )";
+        $result = query($paPDO, $sql);
+
+        if ($result != null) {
+            return json_encode($result[0]);  // Trả về kết quả min, max dưới dạng JSON
+        } else {
+            return json_encode(["error" => "Không tìm thấy dữ liệu"]);
+        }
+    }
 ?>
