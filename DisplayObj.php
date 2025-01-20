@@ -10,13 +10,6 @@
     <link rel="stylesheet" href="timeline.css" type="text/css" />
     <!-- <link rel="stylesheet" href="bootstrap4.6.0.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="openlayers.js" type="text/javascript"></script>
-    <script src="jquery3.7.1.js" type="text/javascript"></script>
-
-    <script src="yagi.js" type="text/javascript"></script>
-    <script src="province.js" type="text/javascript"></script>
-    <script src="provincesbyattribute.js" type="text/javascript"></script>
-    <script src="highlight.js" type="text/javascript"></script>
 </head>
 
 <body onload="initialize_map();">
@@ -118,7 +111,7 @@
                     </select>
 
                     <div style="height: 20px; /* Chiều cao thanh */
-                                background: linear-gradient(to right, rgba(255, 255, 0, 0.8), rgba(255, 0, 0, 0.8));
+                                background: linear-gradient(to right, rgba(0, 255, 0, 0.8), rgba(255, 255, 0, 0.8), rgba(255, 0, 0, 0.8));
                                 border: 1px solid #ccc;">
                     </div>
                     <div style="float: left;">Thấp</div>
@@ -344,14 +337,7 @@
                     console.log('blurred');
                 });
 
-                // //Click event handler for button
-                // $('#myButton').on('click', function() {
-                //     // alert('Button');
-                //     fetchGeoProvince(vectorProvinceLayer);
-                // });
-
                 let clickCount = 0; // Initialize a counter
-
                 // Attach click event handler to the button
                 $('#myButton').on('click', function() {
                     clickCount++; // Increment the counter on each click
@@ -409,7 +395,13 @@
         }
     </script>
 
+    <script src="openlayers.js" type="text/javascript"></script>
+    <script src="jquery3.7.1.js" type="text/javascript"></script>
 
+    <script src="yagi.js" type="text/javascript"></script>
+    <script src="province.js" type="text/javascript"></script>
+    <script src="provincesbyattribute.js" type="text/javascript"></script>
+    <script src="highlight.js" type="text/javascript"></script>
 </body>
 
 </html>

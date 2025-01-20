@@ -119,11 +119,19 @@ function getColorByValue(value, minValue, maxValue) {
     // Đảm bảo giá trị chuẩn hóa nằm trong khoảng 0 đến 1
     normalizedValue = Math.max(0, Math.min(1, normalizedValue));
 
-    // Sử dụng giá trị chuẩn hóa để quyết định màu sắc (gradient từ vàng đến đỏ)
-    let red = 255 //Math.floor(normalizedValue * 255);  // Màu đỏ tăng dần
-    let green = Math.floor((1 - normalizedValue) * 255);  // Màu xanh lá giảm dần
-    let blue = 0;  // Giữ màu xanh dương bằng 0
+    // if (normalizedValue <= 0.5) {
+    //     var red = Math.floor(normalizedValue * 2 * 255);  // Màu đỏ tăng dần
+    //     var green = 255;
+    //     var blue = 120;  // Giữ màu xanh dương bằng 0
+    // }
+    // // Sử dụng giá trị chuẩn hóa để quyết định màu sắc (gradient từ vàng đến đỏ)
+    // else {
+    //     var red = 255;  // Màu đỏ tăng dần
+    //     var green = Math.floor((1-normalizedValue) * 2 * 255);  // Màu xanh lá giảm dần
+    //     var blue = 0;  // Giữ màu xanh dương bằng 0
+    // }
 
+    var alpha = normalizedValue + 0.3;
     // Trả về màu sắc dưới dạng rgba
-    return `rgba(${red}, ${green}, ${blue}, 0.8)`;
+    return `rgba(255,0,0, ${alpha})`;
 }

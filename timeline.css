@@ -2,6 +2,10 @@ body {
     margin-top: 20px;
 }
 
+#map:hover{
+    cursor: pointer;
+}
+
 .timeline-steps {
     display: flex;
     justify-content: center;
@@ -64,35 +68,13 @@ body {
     opacity: .5
 }
 
-.timeline-steps .timeline-content:hover {
-    font-style: italic;
-    font-weight: bold;
-    color: #f63b3b;
-}
-.timeline-steps .timeline-content:hover .inner-circle {
-    border-radius: 1.5rem;
-    height: 1rem;
-    width: 1rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f63b3b
-}
-.timeline-steps .timeline-content:hover .inner-circle:before {
-    content: "";
-    background-color: #f63b3b;
-    display: inline-block;
-    height: 4rem;
-    width: 4rem;
-    min-width: 4rem;
-    border-radius: 6.25rem;
-}
 
-.timeline-steps .timeline-content:focus {
+.timeline-steps .timeline-content:hover, .timeline-steps .timeline-content:focus {
     font-style: italic;
     font-weight: bold;
     color: #f63b3b;
 }
+.timeline-steps .timeline-content:hover .inner-circle, 
 .timeline-steps .timeline-content:focus .inner-circle {
     border-radius: 1.5rem;
     height: 1rem;
@@ -102,6 +84,7 @@ body {
     justify-content: center;
     background-color: #f63b3b
 }
+.timeline-steps .timeline-content:hover .inner-circle:before,
 .timeline-steps .timeline-content:focus .inner-circle:before {
     content: "";
     background-color: #f63b3b;
@@ -111,6 +94,7 @@ body {
     min-width: 4rem;
     border-radius: 6.25rem;
 }
+
 
 .timeline-steps .timeline-content.blurred {
     font-style: italic;
