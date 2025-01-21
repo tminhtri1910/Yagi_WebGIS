@@ -14,4 +14,4 @@
 ![alt text](assets/image4.png)
 
 5. Chi tiết thiệt hại của từng tỉnh
-![alt text](assets/image.png)
+![alt text](assets/image5.png)
